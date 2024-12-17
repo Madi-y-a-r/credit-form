@@ -1,8 +1,23 @@
 import { useState } from "react";
 import Input from "./common/Input";
 
-const PersonalInfoStep = ({ onNext, initialData }: any) => {
-  const [data, setData] = useState({
+interface PersonalInfoStepProps {
+  onNext: (data: PersonalInfoData) => void;
+  initialData: PersonalInfoData;
+}
+
+interface PersonalInfoData {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+}
+const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
+  onNext,
+  initialData,
+}) => {
+  const [data, setData] = useState<PersonalInfoData>({
     firstName: initialData.firstName || "",
     lastName: initialData.lastName || "",
     birthDate: initialData.birthDate || "",
@@ -10,7 +25,7 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
     email: initialData.email || "",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Partial<PersonalInfoData>>({
     firstName: "",
     lastName: "",
     birthDate: "",
@@ -19,7 +34,7 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
   });
 
   const validate = () => {
-    const newErrors = { firstName: "", lastName: "", birthDate: "", phone: "", email: "" };
+    const newErrors: Partial<PersonalInfoData> = {};
     let isValid = true;
 
     if (!data.firstName) {
@@ -66,7 +81,7 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
         placeholder="Введите ваше имя"
         value={data.firstName}
         onChange={(e) => setData({ ...data, firstName: e.target.value })}
-        error={errors.firstName }
+        error={errors.firstName}
       />
 
       <Input
@@ -77,6 +92,7 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
         onChange={(e) => setData({ ...data, lastName: e.target.value })}
         error={errors.lastName}
       />
+
       <Input
         id="birthDate"
         label="Дата рождения"
@@ -86,7 +102,6 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
         onChange={(e) => setData({ ...data, birthDate: e.target.value })}
         error={errors.birthDate}
       />
-      
 
       <Input
         id="phone"
@@ -105,7 +120,6 @@ const PersonalInfoStep = ({ onNext, initialData }: any) => {
         onChange={(e) => setData({ ...data, email: e.target.value })}
         error={errors.email}
       />
-    
 
       <button
         onClick={handleNext}

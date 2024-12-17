@@ -2,7 +2,23 @@ import { useState } from "react";
 import Input from "./common/Input";
 import Select from "./common/Select";
 
-const AddressInfoStep = ({ onNext, onBack, initialData }: any) => {
+interface AddressInfoStepProps {
+  onNext: (data: AddressData) => void;
+  onBack: () => void;
+  initialData: AddressData;
+}
+
+interface AddressData {
+  country: string;
+  city: string;
+  street: string;
+  postalCode: string;
+}
+const AddressInfoStep: React.FC<AddressInfoStepProps> = ({
+  onNext,
+  onBack,
+  initialData,
+}) => {
   const [data, setData] = useState({
     country: initialData.country || "",
     city: initialData.city || "",

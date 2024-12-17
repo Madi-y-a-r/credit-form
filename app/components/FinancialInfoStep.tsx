@@ -2,21 +2,37 @@ import { useState } from "react";
 import Input from "./common/Input";
 import RangeInput from "./common/RangeInput";
 
-const FinancialInfoStep = ({ onNext, onBack, initialData }: any) => {
-  const [data, setData] = useState({
-    income: initialData.income || "",
+interface FinancialInfoStepProps {
+  onNext: (data: FinancialInfoData) => void;
+  onBack: () => void;
+  initialData: FinancialInfoData;
+}
+
+interface FinancialInfoData {
+  income: number;
+  creditAmount: number;
+  creditTerm: number;
+}
+
+const FinancialInfoStep: React.FC<FinancialInfoStepProps> = ({
+  onNext,
+  onBack,
+  initialData,
+}) => {
+  const [data, setData] = useState<FinancialInfoData>({
+    income: initialData.income || 0,
     creditAmount: initialData.creditAmount || 20000,
     creditTerm: initialData.creditTerm || 12,
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<Partial<Record<keyof FinancialInfoData, string>>>({
     income: "",
     creditAmount: "",
     creditTerm: "",
   });
 
   const validate = () => {
-    const newErrors = { income: "", creditAmount: "", creditTerm: "" };
+    const newErrors: Partial<Record<keyof FinancialInfoData, string>> = {};
     let isValid = true;
 
     if (!data.income || data.income <= 0) {
@@ -45,25 +61,27 @@ const FinancialInfoStep = ({ onNext, onBack, initialData }: any) => {
   return (
     <div className="flex flex-col justify-center items-center space-y-4">
       <h2 className="text-2xl text-white font-bold">Финансовая информация</h2>
-
+      <p className="text-gray-500 mb-4">
+        Укажите ваш ежемесячный доход, сумму кредита и срок оформления.
+      </p>
       <Input
         id="income"
-        label="Ежемесячный доход"
+        label="Ежемесячный доход {в тенге)"
         placeholder="Введите ваш доход"
         type="number"
-        value={data.income}
-        onChange={(e) => setData({ ...data, income: +e.target.value })}
+        value={data.income.toString()}
+        onChange={(e) => setData({ ...data, income: Number(e.target.value) || 0 })}
         error={errors.income}
       />
 
       <RangeInput
         id="creditAmount"
-        label="Сумма кредита"
+        label="Сумма кредита {в тенге)"
         min={20000}
         max={1000000}
         step={1000}
         value={data.creditAmount}
-        onChange={(e) => setData({ ...data, creditAmount: +e.target.value })}
+        onChange={(e) => setData({ ...data, creditAmount: Number(e.target.value) || 20000 })}
         error={errors.creditAmount}
       />
 
@@ -72,8 +90,8 @@ const FinancialInfoStep = ({ onNext, onBack, initialData }: any) => {
         label="Срок кредита (в месяцах)"
         placeholder="Введите срок кредита"
         type="number"
-        value={data.creditTerm}
-        onChange={(e) => setData({ ...data, creditTerm: +e.target.value })}
+        value={data.creditTerm.toString()}
+        onChange={(e) => setData({ ...data, creditTerm: Number(e.target.value) || 12 })}
         error={errors.creditTerm}
       />
 

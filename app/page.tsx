@@ -1,28 +1,67 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import ProgressBar from "./components/common/ProgressBar";
 import PersonalInfoStep from "./components/PersonalInfoStep";
 import AddressInfoStep from "./components/AddressInfoStep";
 import FinancialInfoStep from "./components/FinancialInfoStep";
 
-const Home = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({}); 
+interface PersonalInfoData {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+}
 
+interface AddressInfoData {
+  country: string;
+  city: string;
+  street: string;
+  postalCode: string;
+}
+
+interface FinancialInfoData {
+  income: number;
+  creditAmount: number;
+  creditTerm: number;
+}
+
+type FormData = PersonalInfoData & AddressInfoData & FinancialInfoData;
+
+const Home = () => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    phone: "",
+    email: "",
+    country: "",
+    city: "",
+    street: "",
+    postalCode: "",
+    income: 0,
+    creditAmount: 20000,
+    creditTerm: 12,
+  });
+
+  // Загружаем данные из localStorage при первом рендере
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedData = JSON.parse(localStorage.getItem("creditForm") || "{}");
-      setFormData(savedData);
+      setFormData((prev) => ({ ...prev, ...savedData }));
     }
   }, []);
 
+  // Сохраняем данные в localStorage при их изменении
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("creditForm", JSON.stringify(formData));
     }
   }, [formData]);
 
-  const handleNext = (data: any) => {
+  const handleNext = (data: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
     setCurrentStep((prev) => prev + 1);
   };
@@ -38,7 +77,7 @@ const Home = () => {
         body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
       });
-  
+
       if (response.ok) {
         alert("Форма успешно отправлена!");
         localStorage.removeItem("creditForm");
@@ -51,7 +90,6 @@ const Home = () => {
       alert("Ошибка сети при отправке формы.");
     }
   };
-  
 
   return (
     <div className="container mx-auto p-4">
@@ -74,7 +112,6 @@ const Home = () => {
             initialData={formData}
           />
         )}
-
       </div>
     </div>
   );
